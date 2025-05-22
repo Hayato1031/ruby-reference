@@ -1,7 +1,16 @@
+"use client";
+
 import Link from 'next/link';
 import { colors, shadows, fontFamily } from '../constants/styles';
+import { useState } from 'react';
 
 const Navigation = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+  
   const styles = {
     nav: {
       position: 'fixed',
@@ -63,6 +72,40 @@ const Navigation = () => {
         transform: 'translateY(-1px)',
       },
     },
+    mobileMenuToggle: {
+      display: 'none',
+      background: 'none',
+      border: 'none',
+      fontSize: '1.5rem',
+      cursor: 'pointer',
+      color: colors.rubyRed,
+      padding: '0.5rem',
+      '@media (max-width: 768px)': {
+        display: 'block',
+      },
+    },
+    '@media (max-width: 768px)': {
+      menu: {
+        position: 'fixed',
+        top: '4rem',
+        left: 0,
+        right: 0,
+        flexDirection: 'column',
+        background: 'white',
+        padding: '1rem',
+        borderBottom: `1px solid ${colors.borderLight}`,
+        boxShadow: shadows.md,
+        transform: 'translateY(-100%)',
+        opacity: 0,
+        visibility: 'hidden',
+        transition: 'all 0.3s ease',
+      },
+      menuActive: {
+        transform: 'translateY(0)',
+        opacity: 1,
+        visibility: 'visible',
+      },
+    },
   };
 
   return (
@@ -71,19 +114,63 @@ const Navigation = () => {
         <Link href="/" style={styles.logo}>
           Ruby Reference
         </Link>
-        <ul style={styles.menu}>
+        <button 
+          style={{
+            ...styles.mobileMenuToggle,
+            display: 'none',
+            '@media (max-width: 768px)': { display: 'block' }
+          }} 
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          ☰
+        </button>
+        <ul style={{
+          ...styles.menu,
+          ...(mobileMenuOpen && {
+            '@media (max-width: 768px)': {
+              position: 'fixed',
+              top: '4rem',
+              left: 0,
+              right: 0,
+              flexDirection: 'column',
+              background: 'white',
+              padding: '1rem',
+              borderBottom: `1px solid ${colors.borderLight}`,
+              boxShadow: shadows.md,
+              transform: 'translateY(0)',
+              opacity: 1,
+              visibility: 'visible',
+            }
+          }),
+          '@media (max-width: 768px)': !mobileMenuOpen ? {
+            position: 'fixed',
+            top: '4rem',
+            left: 0,
+            right: 0,
+            flexDirection: 'column',
+            background: 'white',
+            padding: '1rem',
+            borderBottom: `1px solid ${colors.borderLight}`,
+            boxShadow: shadows.md,
+            transform: 'translateY(-100%)',
+            opacity: 0,
+            visibility: 'hidden',
+            transition: 'all 0.3s ease',
+          } : {}
+        }}>
           <li>
-            <Link href="/docs" style={styles.link}>
+            <Link href="/docs" style={styles.link} onClick={() => setMobileMenuOpen(false)}>
               ドキュメント
             </Link>
           </li>
           <li>
-            <Link href="/examples" style={styles.link}>
+            <Link href="/examples" style={styles.link} onClick={() => setMobileMenuOpen(false)}>
               サンプル
             </Link>
           </li>
           <li>
-            <Link href="/contribute" style={styles.cta}>
+            <Link href="/contribute" style={styles.cta} onClick={() => setMobileMenuOpen(false)}>
               貢献する
             </Link>
           </li>
@@ -93,4 +180,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation; 
+export default Navigation;  

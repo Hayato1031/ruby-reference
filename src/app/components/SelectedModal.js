@@ -1,6 +1,6 @@
 import { colors, shadows } from '../constants/styles';
 
-const SelectedModal = ({ open, onClose, selected, onRemove, onGenerate }) => {
+const SelectedModal = ({ open, onClose, selected, onRemove, onGenerate, isGenerating }) => {
   if (!open) return null;
   const styles = {
     overlay: {
@@ -84,10 +84,10 @@ const SelectedModal = ({ open, onClose, selected, onRemove, onGenerate }) => {
       padding: '0.75rem 1.5rem',
       fontSize: '1rem',
       fontWeight: 600,
-      cursor: selected.length === 0 ? 'not-allowed' : 'pointer',
+      cursor: selected.length === 0 || isGenerating ? 'not-allowed' : 'pointer',
       transition: 'all 0.2s ease',
       marginTop: '1rem',
-      opacity: selected.length === 0 ? 0.5 : 1,
+      opacity: selected.length === 0 || isGenerating ? 0.5 : 1,
     },
     empty: {
       color: colors.textSecondary,
@@ -121,14 +121,14 @@ const SelectedModal = ({ open, onClose, selected, onRemove, onGenerate }) => {
         </div>
         <button
           style={styles.generate}
-          disabled={selected.length === 0}
-          onClick={() => selected.length > 0 && onGenerate()}
+          disabled={selected.length === 0 || isGenerating}
+          onClick={() => selected.length > 0 && !isGenerating && onGenerate()}
         >
-          練習問題を生成する
+          {isGenerating ? '生成中...' : '練習問題を生成する'}
         </button>
       </div>
     </div>
   );
 };
 
-export default SelectedModal; 
+export default SelectedModal;      

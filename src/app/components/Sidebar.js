@@ -6,6 +6,11 @@ const Sidebar = ({ sections, activeSection, onSectionChange }) => {
       position: 'sticky',
       top: '6rem',
       height: 'fit-content',
+      '@media (max-width: 768px)': {
+        position: 'relative',
+        top: 0,
+        marginBottom: '2rem',
+      },
     },
     card: {
       background: colors.bgSecondary,
@@ -79,4 +84,4 @@ const Sidebar = ({ sections, activeSection, onSectionChange }) => {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;  

@@ -43,6 +43,9 @@ export default function Home() {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [modalOpen, setModalOpen] = useState(false);
 
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedProblems, setGeneratedProblems] = useState(null);
+  
   // 選択・解除
   const handleSelect = (id) => setSelectedIds(new Set(selectedIds).add(id));
   const handleDeselect = (id) => {
@@ -51,10 +54,59 @@ export default function Home() {
     setSelectedIds(newSet);
   };
   const handleRemove = (id) => handleDeselect(id);
-  const handleGenerate = () => {
+  
+  const handleGenerate = async () => {
     const allItems = Object.values(genreGroups.find(g => g.id === activeGroup).itemsByGenre).flat();
     const selected = allItems.filter(m => selectedIds.has(m.id));
-    alert(`選択されたアイテム（${selected.length}個）で練習問題を生成します：\n\n${selected.map(m => m.name).join('\n')}`);
+    
+    setIsGenerating(true);
+    
+    try {
+      setTimeout(() => {
+        const mockProblems = [
+          {
+            title: `${selected[0].name}を使った問題`,
+            description: `次のコードを実行すると何が出力されますか？\n\n\`\`\`ruby\n# ${selected[0].name}を使った例\n${selected[0].example.split('#')[0]}\nputs "結果を予想してください"\n\`\`\``,
+            answer: `正解は「${selected[0].description}」に関連します。\n\n解説: ${selected[0].description}`
+          }
+        ];
+        
+        if (selected.length > 1) {
+          mockProblems.push({
+            title: `${selected[1].name}と${selected[0].name}を組み合わせた問題`,
+            description: `次のコードを修正して、期待する出力を得るようにしてください。\n\n\`\`\`ruby\n# 修正が必要なコード\ndef process_data(data)\n  # ここにコードを書いてください\nend\n\`\`\``,
+            answer: `正解例:\n\`\`\`ruby\ndef process_data(data)\n  # ${selected[0].name}と${selected[1].name}を使った解答例\n  result = ${selected[0].example.split('#')[0].trim()}\n  result\nend\n\`\`\``
+          });
+        }
+        
+        alert(`練習問題が生成されました！\n\n問題1: ${mockProblems[0].title}\n${mockProblems[0].description}`);
+        setGeneratedProblems(mockProblems);
+        setIsGenerating(false);
+      }, 1500);
+      
+      /*
+      const response = await fetch('/api/generate-problems', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ selected }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate problems');
+      }
+      
+      const data = await response.json();
+      setGeneratedProblems(data.problems);
+      */
+    } catch (error) {
+      console.error('Error generating problems:', error);
+      alert('練習問題の生成に失敗しました。後でもう一度お試しください。');
+    } finally {
+      setIsGenerating(false);
+    }
+    
     setModalOpen(false);
   };
 
@@ -112,6 +164,10 @@ export default function Home() {
       display: 'grid',
       gridTemplateColumns: '280px 1fr',
       gap: '3rem',
+      '@media (max-width: 768px)': {
+        gridTemplateColumns: '1fr',
+        gap: '1.5rem',
+      },
     },
   };
 
@@ -163,6 +219,7 @@ export default function Home() {
         selected={selectedItems}
         onRemove={handleRemove}
         onGenerate={handleGenerate}
+        isGenerating={isGenerating}
       />
     </main>
   );

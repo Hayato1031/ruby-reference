@@ -118,15 +118,15 @@ const Hero = () => {
         </div>
         <div style={styles.stats}>
           <div style={styles.statItem}>
-            <span style={styles.statNumber}>500+</span>
+            <span style={styles.statNumber}>434</span>
             <span style={styles.statLabel}>メソッド解説</span>
           </div>
           <div style={styles.statItem}>
-            <span style={styles.statNumber}>1000+</span>
+            <span style={styles.statNumber}>434+</span>
             <span style={styles.statLabel}>コード例</span>
           </div>
           <div style={styles.statItem}>
-            <span style={styles.statNumber}>50+</span>
+            <span style={styles.statNumber}>91</span>
             <span style={styles.statLabel}>構文解説</span>
           </div>
         </div>
@@ -135,4 +135,4 @@ const Hero = () => {
   );
 };
 
-export default Hero; 
+export default Hero;  
