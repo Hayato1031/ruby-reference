@@ -1,103 +1,169 @@
-import Image from "next/image";
+"use client";
+
+import Navigation from './components/Navigation';
+import Hero from './components/Hero';
+import MethodGrid from './components/MethodGrid';
+import Sidebar from './components/Sidebar';
+import FloatingButton from './components/FloatingButton';
+import SelectedModal from './components/SelectedModal';
+import { colors, shadows } from './constants/styles';
+import { useState } from 'react';
+import syntaxGenres from './data/syntaxGenres';
+import syntaxByGenre from './data/syntaxByGenre';
+import methodSections from './data/methodSections';
+import methodsByCategory from './data/methodsByCategory';
+
+// ジャンル情報を統一的に管理
+const genreGroups = [
+  {
+    id: 'syntax',
+    title: '構文ジャンル',
+    genres: syntaxGenres.map(({ id, title }) => ({ id, name: title })),
+    itemsByGenre: syntaxByGenre,
+  },
+  {
+    id: 'methods',
+    title: 'メソッド',
+    genres: methodSections,
+    itemsByGenre: methodsByCategory,
+  },
+];
+
+// サイドバー用sections
+const sidebarSections = genreGroups.map(group => ({
+  id: group.id,
+  title: group.title,
+  items: group.genres,
+}));
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  // デフォルトは最初のグループ・最初のジャンル
+  const [activeGroup, setActiveGroup] = useState(genreGroups[0].id);
+  const [activeGenre, setActiveGenre] = useState(genreGroups[0].genres[0].id);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [modalOpen, setModalOpen] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  // 選択・解除
+  const handleSelect = (id) => setSelectedIds(new Set(selectedIds).add(id));
+  const handleDeselect = (id) => {
+    const newSet = new Set(selectedIds);
+    newSet.delete(id);
+    setSelectedIds(newSet);
+  };
+  const handleRemove = (id) => handleDeselect(id);
+  const handleGenerate = () => {
+    const allItems = Object.values(genreGroups.find(g => g.id === activeGroup).itemsByGenre).flat();
+    const selected = allItems.filter(m => selectedIds.has(m.id));
+    alert(`選択されたアイテム（${selected.length}個）で練習問題を生成します：\n\n${selected.map(m => m.name).join('\n')}`);
+    setModalOpen(false);
+  };
+
+  // 選択中のアイテム情報
+  const allItems = Object.values(genreGroups.find(g => g.id === activeGroup).itemsByGenre).flat();
+  const selectedItems = allItems.filter(m => selectedIds.has(m.id));
+
+  // サイドバー切り替え
+  const handleSectionChange = (genreId, groupId) => {
+    setActiveGroup(groupId);
+    if (groupId !== activeGroup) {
+      const newGroup = genreGroups.find(g => g.id === groupId);
+      setActiveGenre(newGroup.genres[0].id);
+    } else {
+      setActiveGenre(genreId);
+    }
+  };
+
+  // 表示するジャンル・リスト
+  const currentGroup = genreGroups.find(g => g.id === activeGroup);
+  const currentGenre = currentGroup.genres.find(g => g.id === activeGenre);
+  const items = currentGroup.itemsByGenre[activeGenre] || [];
+  // 構文ジャンルの場合のみ説明を表示
+  const genreDescription = activeGroup === 'syntax'
+    ? (syntaxGenres.find(g => g.id === activeGenre)?.description || '')
+    : '';
+
+  const styles = {
+    container: {
+      maxWidth: '1200px',
+      margin: '0 auto',
+      padding: '4rem 2rem',
+    },
+    main: {
+      background: colors.bgPrimary,
+      border: `1px solid ${colors.borderLight}`,
+      borderRadius: '12px',
+      padding: '2rem',
+      boxShadow: shadows.sm,
+    },
+    title: {
+      fontSize: '2.5rem',
+      fontWeight: 800,
+      color: colors.textPrimary,
+      marginBottom: '2rem',
+      lineHeight: 1.2,
+    },
+    accent: {
+      color: colors.rubyRed,
+    },
+    popularSection: {
+      marginBottom: '4rem',
+    },
+    docsSection: {
+      display: 'grid',
+      gridTemplateColumns: '280px 1fr',
+      gap: '3rem',
+    },
+  };
+
+  return (
+    <main>
+      <Navigation />
+      <Hero />
+      <div style={styles.container}>
+        <div style={styles.popularSection}>
+          <div style={styles.main}>
+            <h2 style={styles.title}>
+              <span style={styles.accent}>人気の</span>メソッド
+            </h2>
+            <MethodGrid
+              methods={methodsByCategory.array.slice(0, 3)}
+              selectedIds={selectedIds}
+              onSelect={handleSelect}
+              onDeselect={handleDeselect}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <div style={styles.docsSection}>
+          <Sidebar
+            sections={sidebarSections}
+            activeSection={{ groupId: activeGroup, genreId: activeGenre }}
+            onSectionChange={(genreId, groupId) => handleSectionChange(genreId, groupId)}
+            activeGroup={activeGroup}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <div style={styles.main}>
+            <h2 style={styles.title}>
+              <span style={styles.accent}>{currentGroup.title.replace('ジャンル', '')}</span> {currentGenre?.name || ''}
+            </h2>
+            {genreDescription && (
+              <div style={{ color: colors.textSecondary, marginBottom: '1.5rem', fontSize: '1rem' }}>{genreDescription}</div>
+            )}
+            <MethodGrid
+              methods={items}
+              selectedIds={selectedIds}
+              onSelect={handleSelect}
+              onDeselect={handleDeselect}
+            />
+          </div>
+        </div>
+      </div>
+      <FloatingButton count={selectedIds.size} onClick={() => setModalOpen(true)} />
+      <SelectedModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        selected={selectedItems}
+        onRemove={handleRemove}
+        onGenerate={handleGenerate}
+      />
+    </main>
   );
 }

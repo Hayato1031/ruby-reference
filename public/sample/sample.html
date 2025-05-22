@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruby構文・メソッド完全リファレンス</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ruby-red: #dc2626;
+            --ruby-red-light: #ef4444;
+            --ruby-red-dark: #b91c1c;
+            --ruby-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --border-light: #e5e7eb;
+            --border-medium: #d1d5db;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Clean Navigation */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-light);
+            z-index: 1000;
+            transition: all 0.2s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--ruby-red);
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--ruby-red);
+        }
+
+        .nav-cta {
+            background: var(--ruby-red);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .nav-cta:hover {
+            background: var(--ruby-red-dark);
+            transform: translateY(-1px);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        /* Clean Hero Section */
+        .header {
+            background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-content {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--ruby-red);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .header h1 .ruby-text {
+            color: var(--ruby-red);
+        }
+
+        .header-subtitle {
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            line-height: 1.5;
+        }
+
+        .header-cta {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 4rem;
+        }
+
+        .cta-button {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .cta-primary {
+            background: var(--ruby-red);
+            color: white;
+        }
+
+        .cta-primary:hover {
+            background: var(--ruby-red-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--border-medium);
+        }
+
+        .cta-secondary:hover {
+            border-color: var(--ruby-red);
+            color: var(--ruby-red);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--ruby-red);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* Clean Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 3rem;
+        }
+
+        /* Clean Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 6rem;
+            height: fit-content;
+        }
+
+        .sidebar-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .nav-section h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background: white;
+            color: var(--ruby-red);
+        }
+
+        .nav-item.active {
+            background: var(--ruby-red);
+            color: white;
+        }
+
+        /* Clean Main Content */
+        .main-content {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+
+        .section-title .ruby-accent {
+            color: var(--ruby-red);
+        }
+
+        /* Clean Method Grid */
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .method-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .method-card:hover {
+            border-color: var(--ruby-red);
+            box-shadow: var(--shadow-md);
+        }
+
+        .method-card.selected {
+            border-color: var(--ruby-red);
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .method-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--ruby-red);
+            margin-bottom: 0.5rem;
+        }
+
+        .method-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .method-example {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .checkbox {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-medium);
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox.checked {
+            background: var(--ruby-red);
+            border-color: var(--ruby-red);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Clean Floating Button */
+        .floating-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            background: var(--ruby-red);
+            border: none;
+            border-radius: 50%;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            z-index: 999;
+        }
+
+        .floating-button:hover {
+            background: var(--ruby-red-dark);
+            transform: scale(1.1);
+        }
+
+        .selected-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #059669;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Clean Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .close-button:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .selected-list {
+            margin-bottom: 1.5rem;
+        }
+
+        .selected-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .remove-button {
+            background: var(--ruby-red);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .remove-button:hover {
+            background: var(--ruby-red-dark);
+        }
+
+        .generate-button {
+            width: 100%;
+            background: var(--ruby-red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .generate-button:hover {
+            background: var(--ruby-red-dark);
+        }
+
+        .generate-button:disabled {
+            background: var(--text-tertiary);
+            cursor: not-allowed;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 2rem 1rem;
+            }
+            
+            .sidebar {
+                position: relative;
+                top: 0;
+            }
+            
+            .method-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem 2rem;
+                box-shadow: var(--shadow-lg);
+                border-top: 1px solid var(--border-light);
+                transform: translateY(-100%);
+                transition: transform 0.3s ease;
+                opacity: 0;
+                visibility: hidden;
+                gap: 1rem;
+            }
+            
+            .nav-menu.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .nav-item {
+                width: 100%;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 0;
+                text-align: center;
+                width: 100%;
+                display: block;
+            }
+            
+            .header {
+                padding: 6rem 1rem 2rem;
+                min-height: 90vh;
+            }
+            
+            .header-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            
+            .floating-button {
+                width: 48px;
+                height: 48px;
+                bottom: 1rem;
+                right: 1rem;
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .top-nav,
+            .floating-button,
+            .modal {
+                display: none !important;
+            }
+            
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .method-card {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Clean Navigation -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                💎 Ruby リファレンス
+            </a>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#variables" class="nav-link">基礎構文</a></li>
+                <li><a href="#string-methods" class="nav-link">メソッド</a></li>
+                <li><a href="#" class="nav-link">ガイド</a></li>
+                <li><a href="#" class="nav-link nav-cta">練習問題</a></li>
+            </ul>
+            
+            <button class="mobile-menu-toggle" id="mobileToggle">☰</button>
+        </div>
+    </nav>
+
+    <!-- Clean Hero Section -->
+    <div class="header">
+        <div class="header-content">
+            <div class="hero-badge">Ruby 3.3 対応</div>
+            
+            <h1>
+                <span class="ruby-text">Ruby</span> 完全リファレンス
+            </h1>
+            
+            <p class="header-subtitle">
+                構文とメソッドを体系的に学んで、Rubyをマスターしよう
+            </p>
+            
+            <div class="header-cta">
+                <a href="#variables" class="cta-button cta-primary">学習を始める</a>
+                <a href="#string-methods" class="cta-button cta-secondary">メソッド一覧</a>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">メソッド</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">9</span>
+                    <span class="stat-label">カテゴリ</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">実用的</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-card">
+                <div class="nav-section">
+                    <h3>基礎構文</h3>
+                    <div class="nav-item active" data-section="variables">変数</div>
+                    <div class="nav-item" data-section="datatypes">データ型</div>
+                    <div class="nav-item" data-section="operators">演算子</div>
+                    <div class="nav-item" data-section="conditionals">条件分岐</div>
+                    <div class="nav-item" data-section="loops">繰り返し</div>
+                    <div class="nav-item" data-section="methods">メソッド</div>
+                    <div class="nav-item" data-section="classes">クラス</div>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>主要メソッド</h3>
+                    <div class="nav-item" data-section="string-methods">文字列</div>
+                    <div class="nav-item" data-section="array-methods">配列</div>
+                    <div class="nav-item" data-section="hash-methods">ハッシュ</div>
+                    <div class="nav-item" data-section="numeric-methods">数値</div>
+                    <div class="nav-item" data-section="other-methods">その他</div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <!-- Variables Section -->
+            <section id="variables" class="content-section active">
+                <h2 class="section-title"><span class="ruby-accent">変数</span>の基礎</h2>
+                <div class="method-grid">
+                    <div class="method-card" data-item="local-variables">
+                        <div class="checkbox"></div>
+                        <div class="method-name">ローカル変数</div>
+                        <div class="method-description">小文字またはアンダースコアで始まる変数。メソッドやブロック内でのみ有効。</div>
+                        <div class="method-example">name = "Ruby"
+age = 30
+user_score = 100</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="instance-variables">
+                        <div class="checkbox"></div>
+                        <div class="method-name">インスタンス変数</div>
+                        <div class="method-description">@で始まる変数。特定のオブジェクトに紐づいて状態を保持。</div>
+                        <div class="method-example">class Person
+  def initialize(name)
+    @name = name
+  end
+end</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="class-variables">
+                        <div class="checkbox"></div>
+                        <div class="method-name">クラス変数</div>
+                        <div class="method-description">@@で始まる変数。クラスとそのインスタンス間で共有。</div>
+                        <div class="method-example">class Car
+  @@count = 0
+  def initialize
+    @@count += 1
+  end
+end</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="constants">
+                        <div class="checkbox"></div>
+                        <div class="method-name">定数</div>
+                        <div class="method-description">大文字で始まる変数。値を変更しないデータに使用。</div>
+                        <div class="method-example">PI = 3.14159
+MAX_SIZE = 100
+API_VERSION = "v2.1"</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- String Methods Section -->
+            <section id="string-methods" class="content-section">
+                <h2 class="section-title"><span class="ruby-accent">文字列</span>メソッド</h2>
+                <div class="method-grid">
+                    <div class="method-card" data-item="length">
+                        <div class="checkbox"></div>
+                        <div class="method-name">length / size</div>
+                        <div class="method-description">文字列の文字数を取得</div>
+                        <div class="method-example">"Hello".length  # => 5
+"Ruby".size     # => 4</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="upcase">
+                        <div class="checkbox"></div>
+                        <div class="method-name">upcase / downcase</div>
+                        <div class="method-description">大文字・小文字変換</div>
+                        <div class="method-example">"hello".upcase    # => "HELLO"
+"WORLD".downcase  # => "world"</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="strip">
+                        <div class="checkbox"></div>
+                        <div class="method-name">strip</div>
+                        <div class="method-description">前後の空白を除去</div>
+                        <div class="method-example">"  hello  ".strip  # => "hello"</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="gsub">
+                        <div class="checkbox"></div>
+                        <div class="method-name">gsub</div>
+                        <div class="method-description">文字列の置換（全て）</div>
+                        <div class="method-example">"hello".gsub("l", "x")  # => "hexxo"</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="split">
+                        <div class="checkbox"></div>
+                        <div class="method-name">split</div>
+                        <div class="method-description">文字列を分割して配列に</div>
+                        <div class="method-example">"a,b,c".split(",")  # => ["a", "b", "c"]</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="include-string">
+                        <div class="checkbox"></div>
+                        <div class="method-name">include?</div>
+                        <div class="method-description">指定した文字列が含まれているか</div>
+                        <div class="method-example">"hello".include?("ll")  # => true</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Array Methods Section -->
+            <section id="array-methods" class="content-section">
+                <h2 class="section-title"><span class="ruby-accent">配列</span>メソッド</h2>
+                <div class="method-grid">
+                    <div class="method-card" data-item="push">
+                        <div class="checkbox"></div>
+                        <div class="method-name">push / <<</div>
+                        <div class="method-description">配列の末尾に要素を追加</div>
+                        <div class="method-example">[1, 2].push(3)  # => [1, 2, 3]
+[1, 2] << 3     # => [1, 2, 3]</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="each">
+                        <div class="checkbox"></div>
+                        <div class="method-name">each</div>
+                        <div class="method-description">各要素に対して処理を実行</div>
+                        <div class="method-example">[1, 2, 3].each { |n| puts n }</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="map">
+                        <div class="checkbox"></div>
+                        <div class="method-name">map</div>
+                        <div class="method-description">各要素を変換して新配列作成</div>
+                        <div class="method-example">[1, 2, 3].map { |n| n * 2 }
+# => [2, 4, 6]</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="select">
+                        <div class="checkbox"></div>
+                        <div class="method-name">select</div>
+                        <div class="method-description">条件に合う要素を抽出</div>
+                        <div class="method-example">[1, 2, 3, 4].select(&:even?)
+# => [2, 4]</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hash Methods Section -->
+            <section id="hash-methods" class="content-section">
+                <h2 class="section-title"><span class="ruby-accent">ハッシュ</span>メソッド</h2>
+                <div class="method-grid">
+                    <div class="method-card" data-item="keys">
+                        <div class="checkbox"></div>
+                        <div class="method-name">keys</div>
+                        <div class="method-description">全てのキーを配列で取得</div>
+                        <div class="method-example">{a: 1, b: 2}.keys  # => [:a, :b]</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="values">
+                        <div class="checkbox"></div>
+                        <div class="method-name">values</div>
+                        <div class="method-description">全ての値を配列で取得</div>
+                        <div class="method-example">{a: 1, b: 2}.values  # => [1, 2]</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="each-hash">
+                        <div class="checkbox"></div>
+                        <div class="method-name">each</div>
+                        <div class="method-description">キーと値のペアに対して処理</div>
+                        <div class="method-example">{a: 1, b: 2}.each do |k, v|
+  puts "#{k}: #{v}"
+end</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="merge">
+                        <div class="checkbox"></div>
+                        <div class="method-name">merge</div>
+                        <div class="method-description">2つのハッシュを結合</div>
+                        <div class="method-example">{a: 1}.merge({b: 2})  # => {a: 1, b: 2}</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other sections can be added similarly -->
+            <section id="datatypes" class="content-section">
+                <h2 class="section-title"><span class="ruby-accent">データ型</span>の基礎</h2>
+                <div class="method-grid">
+                    <div class="method-card" data-item="string">
+                        <div class="checkbox"></div>
+                        <div class="method-name">String（文字列）</div>
+                        <div class="method-description">文字の連続。シングル・ダブルクォートで作成。</div>
+                        <div class="method-example">name = "Ruby"
+message = 'Hello'</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="integer">
+                        <div class="checkbox"></div>
+                        <div class="method-name">Integer（整数）</div>
+                        <div class="method-description">小数点を含まない数値。</div>
+                        <div class="method-example">age = 25
+count = 100</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="array">
+                        <div class="checkbox"></div>
+                        <div class="method-name">Array（配列）</div>
+                        <div class="method-description">複数の要素を順序付けて格納。</div>
+                        <div class="method-example">fruits = ["apple", "banana"]
+numbers = [1, 2, 3]</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="hash">
+                        <div class="checkbox"></div>
+                        <div class="method-name">Hash（ハッシュ）</div>
+                        <div class="method-description">キーと値のペアを格納。</div>
+                        <div class="method-example">person = {name: "Alice", age: 30}</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="numeric-methods" class="content-section">
+                <h2 class="section-title"><span class="ruby-accent">数値</span>メソッド</h2>
+                <div class="method-grid">
+                    <div class="method-card" data-item="even-odd">
+                        <div class="checkbox"></div>
+                        <div class="method-name">even? / odd?</div>
+                        <div class="method-description">偶数・奇数の判定</div>
+                        <div class="method-example">4.even?  # => true
+5.odd?   # => true</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="abs">
+                        <div class="checkbox"></div>
+                        <div class="method-name">abs</div>
+                        <div class="method-description">絶対値を取得</div>
+                        <div class="method-example">(-10).abs  # => 10</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="round">
+                        <div class="checkbox"></div>
+                        <div class="method-name">round</div>
+                        <div class="method-description">四捨五入</div>
+                        <div class="method-example">3.7.round     # => 4
+3.14159.round(2) # => 3.14</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="other-methods" class="content-section">
+                <h2 class="section-title"><span class="ruby-accent">その他</span>の重要メソッド</h2>
+                <div class="method-grid">
+                    <div class="method-card" data-item="puts">
+                        <div class="checkbox"></div>
+                        <div class="method-name">puts</div>
+                        <div class="method-description">画面に出力（改行付き）</div>
+                        <div class="method-example">puts "Hello, World!"</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="gets">
+                        <div class="checkbox"></div>
+                        <div class="method-name">gets.chomp</div>
+                        <div class="method-description">ユーザー入力を取得</div>
+                        <div class="method-example">name = gets.chomp
+puts "Hello, #{name}!"</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="nil-check">
+                        <div class="checkbox"></div>
+                        <div class="method-name">nil?</div>
+                        <div class="method-description">nilかどうかを判定</div>
+                        <div class="method-example">value = nil
+value.nil?  # => true</div>
+                    </div>
+                    
+                    <div class="method-card" data-item="class-check">
+                        <div class="checkbox"></div>
+                        <div class="method-name">class</div>
+                        <div class="method-description">オブジェクトの型を確認</div>
+                        <div class="method-example">"hello".class  # => String
+123.class      # => Integer</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Clean Floating Button -->
+    <button class="floating-button" id="fab">
+        🚀
+        <div class="selected-count" id="selectedCount" style="display: none;">0</div>
+    </button>
+
+    <!-- Clean Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">選択したアイテムで練習問題を生成</h3>
+                <button class="close-button" id="closeModal">×</button>
+            </div>
+            
+            <div class="selected-list" id="selectedList">
+                <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">
+                    まだアイテムが選択されていません。<br>
+                    学習したい構文やメソッドを選択してください。
+                </p>
+            </div>
+            
+            <button class="generate-button" id="generateButton" disabled>
+                練習問題を生成する
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let selectedItems = new Set();
+        let currentSection = 'variables';
+
+        // DOM elements
+        const navItems = document.querySelectorAll('.nav-item');
+        const contentSections = document.querySelectorAll('.content-section');
+        const methodCards = document.querySelectorAll('.method-card');
+        const fab = document.getElementById('fab');
+        const modal = document.getElementById('modal');
+        const closeModal = document.getElementById('closeModal');
+        const selectedCount = document.getElementById('selectedCount');
+        const selectedList = document.getElementById('selectedList');
+        const generateButton = document.getElementById('generateButton');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        // Navigation functionality
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const section = item.dataset.section;
+                switchSection(section);
+            });
+        });
+
+        function switchSection(section) {
+            // Update navigation
+            navItems.forEach(item => {
+                item.classList.toggle('active', item.dataset.section === section);
+            });
+
+            // Update content
+            contentSections.forEach(content => {
+                content.classList.toggle('active', content.id === section);
+            });
+
+            currentSection = section;
+        }
+
+        // Mobile menu toggle
+        mobileToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking on links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Method card selection
+        methodCards.forEach(card => {
+            const checkbox = card.querySelector('.checkbox');
+            const itemId = card.dataset.item;
+
+            card.addEventListener('click', (e) => {
+                if (e.target === checkbox) return;
+                toggleSelection(itemId, card, checkbox);
+            });
+
+            checkbox.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSelection(itemId, card, checkbox);
+            });
+        });
+
+        function toggleSelection(itemId, card, checkbox) {
+            if (selectedItems.has(itemId)) {
+                selectedItems.delete(itemId);
+                card.classList.remove('selected');
+                checkbox.classList.remove('checked');
+            } else {
+                selectedItems.add(itemId);
+                card.classList.add('selected');
+                checkbox.classList.add('checked');
+            }
+            updateSelectedCount();
+            updateSelectedList();
+        }
+
+        function updateSelectedCount() {
+            const count = selectedItems.size;
+            if (count > 0) {
+                selectedCount.textContent = count;
+                selectedCount.style.display = 'flex';
+                generateButton.disabled = false;
+            } else {
+                selectedCount.style.display = 'none';
+                generateButton.disabled = true;
+            }
+        }
+
+        function updateSelectedList() {
+            const count = selectedItems.size;
+            
+            if (count === 0) {
+                selectedList.innerHTML = `
+                    <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">
+                        まだアイテムが選択されていません。<br>
+                        学習したい構文やメソッドを選択してください。
+                    </p>
+                `;
+                return;
+            }
+
+            let html = '<h4 style="margin-bottom: 1rem; color: var(--ruby-red);">選択されたアイテム (' + count + '個)</h4>';
+            
+            selectedItems.forEach(itemId => {
+                const card = document.querySelector(`[data-item="${itemId}"]`);
+                const name = card.querySelector('.method-name').textContent;
+                html += `
+                    <div class="selected-item">
+                        <span>${name}</span>
+                        <button class="remove-button" onclick="removeSelectedItem('${itemId}')">削除</button>
+                    </div>
+                `;
+            });
+            
+            selectedList.innerHTML = html;
+        }
+
+        function removeSelectedItem(itemId) {
+            const card = document.querySelector(`[data-item="${itemId}"]`);
+            const checkbox = card.querySelector('.checkbox');
+            
+            selectedItems.delete(itemId);
+            card.classList.remove('selected');
+            checkbox.classList.remove('checked');
+            
+            updateSelectedCount();
+            updateSelectedList();
+        }
+
+        // Modal functionality
+        fab.addEventListener('click', () => {
+            modal.classList.add('active');
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Generate practice problems
+        generateButton.addEventListener('click', () => {
+            const selectedArray = Array.from(selectedItems);
+            const selectedNames = selectedArray.map(itemId => {
+                const card = document.querySelector(`[data-item="${itemId}"]`);
+                return card.querySelector('.method-name').textContent;
+            });
+
+            alert(`選択されたアイテム（${selectedNames.length}個）で練習問題を生成します：\n\n${selectedNames.join('\n')}`);
+            
+            modal.classList.remove('active');
+        });
+
+        // Navigation links functionality
+        document.querySelectorAll('.nav-link, .cta-button').forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (link.getAttribute('href') && link.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1);
+                    
+                    if (document.getElementById(targetId)) {
+                        switchSection(targetId);
+                        
+                        // Smooth scroll to container
+                        document.querySelector('.container').scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Initialize
+        updateSelectedCount();
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                modal.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
