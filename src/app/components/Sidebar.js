@@ -33,18 +33,13 @@ const Sidebar = ({ sections, activeSection, onSectionChange }) => {
       fontWeight: 500,
       fontSize: '0.9rem',
       color: colors.textSecondary,
-      '&:hover': {
-        background: colors.bgPrimary,
-        color: colors.rubyRed,
-      },
+      minHeight: '44px',
+      display: 'flex',
+      alignItems: 'center',
     },
     activeNavItem: {
       background: colors.rubyRed,
       color: 'white',
-      '&:hover': {
-        background: colors.rubyRed,
-        color: 'white',
-      },
     },
   };
 
@@ -60,18 +55,43 @@ const Sidebar = ({ sections, activeSection, onSectionChange }) => {
             }}
           >
             <h3 style={styles.sectionTitle}>{section.title}</h3>
-            {section.items.map((item) => (
-              <div
-                key={`${section.id}-${item.id}`}
-                style={{
-                  ...styles.navItem,
-                  ...((activeSection.groupId === section.id && activeSection.genreId === item.id) ? styles.activeNavItem : {}),
-                }}
-                onClick={() => onSectionChange(item.id, section.id)}
-              >
-                {item.name}
-              </div>
-            ))}
+            {section.items.map((item) => {
+              const isActive = activeSection.groupId === section.id && activeSection.genreId === item.id;
+              
+              return (
+                <div
+                  key={`${section.id}-${item.id}`}
+                  style={{
+                    ...styles.navItem,
+                    ...(isActive ? styles.activeNavItem : {}),
+                  }}
+                  onClick={() => onSectionChange(item.id, section.id)}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.target.style.background = colors.bgPrimary;
+                      e.target.style.color = colors.rubyRed;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.target.style.background = 'transparent';
+                      e.target.style.color = colors.textSecondary;
+                    }
+                  }}
+                  role="button"
+                  tabIndex="0"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSectionChange(item.id, section.id);
+                    }
+                  }}
+                  aria-label={`${section.title} - ${item.name}を選択`}
+                >
+                  {item.name}
+                </div>
+              );
+            })}
           </div>
         ))}
       </div>
@@ -79,4 +99,4 @@ const Sidebar = ({ sections, activeSection, onSectionChange }) => {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;
